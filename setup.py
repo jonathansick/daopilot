@@ -5,6 +5,8 @@ from sphinx.setup_command import BuildDoc
 
 
 dependencies = """
+numpy
+pexpect
 sphinx
 """
 
