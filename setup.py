@@ -12,13 +12,12 @@ sphinx
 
 cmdclass = {'build_sphinx': BuildDoc}
 
-setup(name='pydaophot',
+setup(name='daopilot',
     version="0.0.1",
     author='Jonathan Sick',
     author_email='jonathansick@mac.com',
-    description='DAOPHOT interface for python',
+    description='DAOPHOT driver for python pipelines.',
     license='BSD',
     install_requires=dependencies.split(),
     cmdclass=cmdclass,
-    packages=['pydaophot']
-)
+    packages=['daopilot'])
