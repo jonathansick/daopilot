@@ -15,15 +15,17 @@ class Allstar(object):
     """Wrapper object for Peter Stetson's allstar program for doing psf
     photometry, given a psf model made by daophot.
     
-    TODO refactor to allow one to pass a daophot object and it uses the 'last'
-    objects to automatically make all the paths.
+    .. todo:: refactor to allow one to pass a daophot object and it uses the
+    'last' objects to automatically make all the paths.
     
     .. note:: All the inputs and output paths should be in the same directory
     as the `inputImagePath`.
     """
     def __init__(self, inputImagePath, psfPath, apPhotPath, alsOutputPath,
-            outputImagePath):
+            outputImagePath, shell="/bin/zsh", cmd="allstar"):
         super(Allstar, self).__init__()
+        self.shell = shell
+        self.cmd = cmd
         self.inputImagePath = inputImagePath
         self.psfPath = psfPath  # psf model path
         self.apPhotPath = apPhotPath  # aperture photometry input path
@@ -39,16 +41,19 @@ class Allstar(object):
         # Will be a pexpect instance running allstar
         self.allstar = None
     
-    def run(self):
+    def run(self, timeout=30. * 60):
         """Runs an allstar session.
+
+        :param timeout: time (seconds) to allow `allstar` to run before
+        giving up.
         """
         # need to delete the .als file, otherwise allstar will ask
         # to overwrite it
         if os.path.exists(self.alsOutputPath):
             os.remove(self.alsOutputPath)
         
-        self.allstar = pexpect.spawn('/bin/tcsh -c "cd %s;allstar"' \
-                % os.path.dirname(self.inputImagePath))
+        self.allstar = pexpect.spawn('%s -c "cd %s;%s"' %
+                (self.shell, self.cmd, os.path.dirname(self.inputImagePath)))
         self.allstar.logfile = sys.stdout  # DEBUG
         self.allstar.expect("OPT>")
         print self.allstar.before
@@ -72,7 +77,7 @@ class Allstar(object):
         self.allstar.sendline(os.path.basename(self.outputImagePath))
         
         # wait up to 30 minutes for allstar to finish
-        self.allstar.expect("Good bye.", timeout=30. * 60.)
+        self.allstar.expect("Good bye.", timeout=timeout)
         # TODO, will this get rid of the allstar build-up?
         # self.allstar.sendcontrol('d')
         print "finished"
