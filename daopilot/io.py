@@ -9,7 +9,7 @@ Classes for reading and writing Daophot files.
 import os
 import numpy as np
 
-import region  # TODO change this to pyregion/astropy package
+from regionio import PointList
 
 
 class DaoCatalogBase(object):
@@ -48,7 +48,7 @@ class DaoCatalogBase(object):
         
         .. todo:: Port this to pyregion/astropy package
         """
-        pointList = region.PointList()
+        pointList = PointList()
         pointList.setFrame('image')
         pointList.setPoints(self.stars['x'], self.stars['y'], shapes=marker,
                 colours=markercolour, size=markersize)
@@ -296,28 +296,17 @@ class PickCatalog(object):
         x = [self.stars[idnum]['x'] for idnum in self.stars.keys()]
         y = [self.stars[idnum]['y'] for idnum in self.stars.keys()]
         
-        psfPoints = region.PointList()
+        psfPoints = PointList()
         psfPoints.setFrame('image')
         psfPoints.setPoints(x, y, size=15, shapes="x", labels=serials,
                 colours="red")
         psfPoints.writeTo(outputPath)
     
-    # def writeWCSRegions(self, outputPath, header):
-    #     """Creates a DS9 .reg file with locations of stars by their RA,Dec
-    #     coordinates. The `header` is the pyfits header containing the WCS."""
-    #     serials = self.stars.keys()
-    #     x = [self.stars[idnum]['x'] for idnum in self.stars.keys()]
-    #     y = [self.stars[idnum]['y'] for idnum in self.stars.keys()]
-    #     wcs = astWCS.WCS(header, mode = "pyfits")
-    #     coords = [wcs.pix2wcs(xy[0],xy[1]) for xy in zip(x,y)]
-    #     ra = [coord[0] for coord in coords]
-    #     dec = [coord[1] for coord in coords]
-        
-    #     psfPoints = region.PointList()
-    #     psfPoints.setFrame('linear')
-    #     psfPoints.setPoints(ra, dec, size=15, shapes="x", labels=None,
-    #           colours="cyan")
-    #     psfPoints.writeTo(outputPath)
+    def write_wcs_regions(self, outputPath, header):
+        """Creates a DS9 .reg file with locations of stars by their RA,Dec
+        coordinates. The `header` is the pyfits header containing the WCS.
+        """
+        pass
 
 
 class PSFModel(object):
