@@ -88,8 +88,9 @@ class Daophot(object):
         By default, the attached image will be the last one attached (or the
         inputImagePath on the first run). But if *image* is specified, then
         it will be resolved in two steps
-        1) If a name in the imageCache, that path will be used
-        2) If not in the imageCache, then it will be used as a path itself
+
+        1. If a name in the imageCache, that path will be used
+        2. If not in the imageCache, then it will be used as a path itself
         """
         imagePath = self._resolve_path(image, 'fits')
         self._set_last_path(imagePath, 'fits')
@@ -218,7 +219,7 @@ class Daophot(object):
         :param starList: points to the psf prototype star list.
         
         :return: text output of fitting routine, path to the psf file and path
-        to the neighbours file
+            to the neighbours file
         """
         apPhotPath = self._resolve_path(apPhot, 'ap')
         

@@ -13,7 +13,6 @@ Contents:
 
    daophot
    allstar
-   psfpipe
 
 
 

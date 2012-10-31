@@ -16,10 +16,10 @@ class Allstar(object):
     photometry, given a psf model made by daophot.
     
     .. todo:: refactor to allow one to pass a daophot object and it uses the
-    'last' objects to automatically make all the paths.
+       'last' objects to automatically make all the paths.
     
     .. note:: All the inputs and output paths should be in the same directory
-    as the `inputImagePath`.
+       as the `inputImagePath`.
     """
     def __init__(self, inputImagePath, psfPath, apPhotPath, alsOutputPath,
             outputImagePath, shell="/bin/zsh", cmd="allstar"):
@@ -45,7 +45,7 @@ class Allstar(object):
         """Runs an allstar session.
 
         :param timeout: time (seconds) to allow `allstar` to run before
-        giving up.
+           giving up.
         """
         # need to delete the .als file, otherwise allstar will ask
         # to overwrite it
