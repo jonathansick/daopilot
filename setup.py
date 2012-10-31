@@ -10,7 +10,7 @@ pexpect
 sphinx
 """
 
-cmdclass = {'build_sphinx': BuildDoc}
+cmdclass = {'docs': BuildDoc}
 
 setup(name='daopilot',
     version="0.0.1",
