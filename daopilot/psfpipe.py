@@ -1,4 +1,5 @@
 import os
+import shutil
 import re
 import glob
 import numpy
@@ -16,9 +17,16 @@ from allstar import Allstar
 class PSFFactory(object):
     """Factory class for creating PSFs from a single image.
     """
-    def __init__(self, workDir):
+    def __init__(self, workDir, apRadPath):
         super(PSFFactory, self).__init__()
         self.workDir = workDir
+        if not os.path.exists(self.workDir): os.makedirs(workDir)
+
+        # Install aperture radius config file
+        self.apRadPath = os.path.join(self.workDir, "photo.opt")
+        if apRadPath != self.apRadPath:
+            if os.path.exists(self.apRadPath): os.remove(apRadPath)
+            shutil.copy(apRadPath, self.apRadPath)
     
     def make(self, imageName, imagePath, flagPath, band, maxVarPSF,
             runAllstar=False, findHiddenStars=False, clean=False):
@@ -52,8 +60,8 @@ class PSFFactory(object):
                 self.imageName + "_find.reg"))
         
         # PICK PSF stars
-        # TODO need to generalize this apRadPath
-        self.daophot.apphot(coordinates='last', apRadPath='wirphoto.opt')
+        self.daophot.apphot(coordinates='last',
+                apRadPath=os.path.basename(self.apRadPath))
         apFilePath = self.daophot.get_path('last', 'ap')
         self.daophot.pickPSFStars(100, apPhot='last')
         
