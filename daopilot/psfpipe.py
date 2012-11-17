@@ -52,8 +52,10 @@ class PSFFactory(object):
         self.daophot.set_option('VA', '-1')  # full analytic psf
         self.daophot.find(nAvg=1, nSum=1)
         coordFilePath = self.daophot.get_path('last', 'coo')
-        # FIXME parseCoordFile does not exist
-        findN, findX, findY = catalogio.parseCoordFile(coordFilePath)
+        cooCatalog = catalogio.CoordCatalog()
+        cooCatalog.open(coordFilePath)
+        findX = cooCatalog.stars['x']
+        findY = cooCatalog.stars['y']
         findPoints = regionio.PointList()
         findPoints.setFrame('image')
         findPoints.setPoints(findX, findY, size=6, shapes="circle",
