@@ -2,9 +2,7 @@ import os
 import shutil
 import re
 import glob
-import numpy
 import pyfits
-from astLib import astWCS
 
 import owl.region
 import owl.twomicron
@@ -81,7 +79,7 @@ class PSFFactory(object):
         # Make PSF, run allstar
         fitText, psfPath, neiPath = self.daophot.make_psf(apPhot='last',
                 starList=pickPath, psfName='init')
-        alsPath, alsStarSubPath, neiSubPath = self._makeAllstarPaths("init")
+        alsPath, alsStarSubPath, neiSubPath = self._make_allstar_paths("init")
         if runAllstar:
             allstar = Allstar(self.imagePath,
                 self.daophot.get_path('last', 'psf'),
@@ -93,14 +91,14 @@ class PSFFactory(object):
         for varPSF in range(0, maxVarPSF + 1):
             itername = "var%i" % varPSF
             try:
-                self._iteratePSF(varPSF, neiPath, runAllstar,
+                self._iterate_psf(varPSF, neiPath, runAllstar,
                         name=itername)
             except PSFNotConverged:
                 varPSF = -1
-                self._makeAnalyticPSF()
+                self._make_analytic_psf()
         
         # make final psf on clean image, keeping last-used varPSF
-        success = self._iteratePSF(varPSF, neiPath, runAllstar,
+        success = self._iterate_psf(varPSF, neiPath, runAllstar,
                 name='fin')
         print success
         
@@ -114,7 +112,7 @@ class PSFFactory(object):
         
         return (psfPath, pickPath, coordFilePath, apFilePath)
     
-    def _makeAnalyticPSF(self):
+    def _make_analytic_psf(self):
         """This is a bailout method to return the path to the analytic PSF.
         This is called whenever the empirical PSFs fail to converge."""
         print "FALLING BACK TO ANALYTIC PSF"
@@ -125,7 +123,7 @@ class PSFFactory(object):
         self.daophot.shutdown()
         return psfPath
     
-    def _makeAllstarPaths(self, itername):
+    def _make_allstar_paths(self, itername):
         """Makes paths for the Allstar photometry file (.als) and the
         star-subtracted FITS file automatically based on the input file path.
         """
@@ -135,7 +133,7 @@ class PSFFactory(object):
         neiSubPath = "_".join((imageRoot, itername, "subnei.fits"))
         return alsPath, alsStarSubPath, neiSubPath
     
-    def _iteratePSF(self, varPSF, neiPath, runAllstar, name=None):
+    def _iterate_psf(self, varPSF, neiPath, runAllstar, name=None):
         """Performs a recipe of
         * subtract neighbouring stars
         * fit PSF
@@ -143,7 +141,7 @@ class PSFFactory(object):
         """
         if name is None:
             name = str(varPSF)
-        alsPath, alsStarSubPath, neiSubPath = self._makeAllstarPaths(name)
+        alsPath, alsStarSubPath, neiSubPath = self._make_allstar_paths(name)
         pickPath = self.picker.get_output_path()
 
         # had PSF fit be repeated; will reset to false if no stars are culled
@@ -169,11 +167,12 @@ class PSFFactory(object):
             allstar.run()
         
         if self.findHiddenStars:
-            self.detectHiddenStars(self.daophot.get_path('last', 'psf'),
+            self._detect_hidden_stars(self.daophot.get_path('last', 'psf'),
                     self.daophot.get_path('last', 'ap'),
                     alsPath, alsStarSubPath)
     
-    def detectHiddenStars(self, psfPath, apPhotPath, alsPath, alsStarSubPath):
+    def _detect_hidden_stars(self, psfPath, apPhotPath, alsPath,
+            alsStarSubPath):
         """Runs allstar with the most current psf model; runs daophot find
         on that star-subtracted image and attempts to uncover new stars.
         """
