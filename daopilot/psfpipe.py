@@ -185,7 +185,8 @@ class PSFFactory(object):
         starSubDaophot = Daophot(alsStarSubPath)
         starSubDaophot.startup()
         starSubDaophot.find()
-        starSubDaophot.apphot('last', apRadPath="wirphoto.opt")
+        starSubDaophot.apphot('last',
+            apRadPath=os.path.basename(self.apRadPath))
         newApPath = starSubDaophot.get_path('last', 'ap')
         
         originalApCatalog = catalogio.ApPhotCatalog2()
