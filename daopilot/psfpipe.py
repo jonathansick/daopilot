@@ -4,9 +4,8 @@ import re
 import glob
 import pyfits
 
-import owl.region
-import owl.twomicron
-import owl.Match
+import regionio
+import catalogio
 
 from daophot import Daophot
 from allstar import Allstar
@@ -53,8 +52,9 @@ class PSFFactory(object):
         self.daophot.set_option('VA', '-1')  # full analytic psf
         self.daophot.find(nAvg=1, nSum=1)
         coordFilePath = self.daophot.get_path('last', 'coo')
-        findN, findX, findY = owl.dao.parseCoordFile(coordFilePath)
-        findPoints = owl.region.PointList()
+        # FIXME parseCoordFile does not exist
+        findN, findX, findY = catalogio.parseCoordFile(coordFilePath)
+        findPoints = regionio.PointList()
         findPoints.setFrame('image')
         findPoints.setPoints(findX, findY, size=6, shapes="circle",
                 labels=None, colours="yellow")
@@ -160,7 +160,7 @@ class PSFFactory(object):
                 repeat = False
         
         if runAllstar:
-            allstar = owl.dao.Allstar(self.imagePath,
+            allstar = Allstar(self.imagePath,
                     self.daophot.get_path('last', 'psf'),
                     self.daophot.get_path('last', 'ap'),
                     alsPath, alsStarSubPath)
@@ -180,16 +180,16 @@ class PSFFactory(object):
                 alsPath, alsStarSubPath)
         allstar.run()
         
-        starSubDaophot = owl.dao.Daophot(alsStarSubPath)
+        starSubDaophot = Daophot(alsStarSubPath)
         starSubDaophot.startup()
         starSubDaophot.find()
         starSubDaophot.apphot('last', apRadPath="wirphoto.opt")
         newApPath = starSubDaophot.get_path('last', 'ap')
         
-        originalApCatalog = owl.dao.ApPhotCatalog2()
+        originalApCatalog = catalogio.ApPhotCatalog2()
         originalApCatalog.open(apPhotPath)
         
-        newApCatalog = owl.dao.ApPhotCatalog2()
+        newApCatalog = catalogio.ApPhotCatalog2()
         newApCatalog.open(newApPath)
         
         imageRoot = os.path.splitext(alsStarSubPath)[0]
@@ -262,7 +262,7 @@ class StarPicker(object):
         self.outputPath = None  # where the lst will be saved
         
         # Load the aperture photometry of the star list
-        self.apCatalog = owl.dao.ApPhotCatalog(daophot, daophotName)
+        self.apCatalog = catalogio.ApPhotCatalog(daophot, daophotName)
         # By default, accept all stars as PSF candidates
         self.candidates = self.apCatalog.getStarIDs()
         print "There are %i candidates on init" % len(self.candidates)
@@ -289,7 +289,7 @@ class StarPicker(object):
         mag = [self.apCatalog.stars[star]['mag'] for star in self.candidates]
         magErr = [self.apCatalog.stars[star]['mag_err']
                 for star in self.candidates]
-        pickCatalog = owl.dao.PickCatalog()
+        pickCatalog = catalogio.PickCatalog()
         pickCatalog.setStars(self.candidates, x, y, mag, magErr)
         pickCatalog.write(outputPath)
         self.outputPath = outputPath
@@ -301,7 +301,7 @@ class StarPicker(object):
         y = [self.apCatalog.stars[star]['y'] for star in self.candidates]
         names = [str(star) for star in self.candidates]
         
-        psfPoints = owl.region.PointList()
+        psfPoints = regionio.PointList()
         psfPoints.setFrame('image')
         psfPoints.setPoints(x, y, size=15, shapes="circle", labels=names,
                 colours="cyan")
