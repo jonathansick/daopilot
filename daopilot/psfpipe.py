@@ -29,7 +29,7 @@ class PSFFactory(object):
             if os.path.exists(self.apRadPath): os.remove(apRadPath)
             shutil.copy(apRadPath, self.apRadPath)
     
-    def make(self, imageName, imagePath, flagPath, band, maxVarPSF,
+    def make(self, imageName, imagePath, maxVarPSF,
             runAllstar=False, findHiddenStars=False, clean=False):
         """Makes the PSF model.
         
@@ -40,8 +40,6 @@ class PSFFactory(object):
         """
         self.imageName = imageName
         self.imagePath = imagePath
-        self.flagPath = flagPath
-        self.band = band
         
         self.findHiddenStars = findHiddenStars
         
@@ -211,9 +209,8 @@ class PSFFactory(object):
         """
         imageRoot = os.path.splitext(self.imagePath)[0]
         globPaths = glob.glob(imageRoot + "*.fits")
-        
         for path in globPaths:
-            if (path == self.imagePath) | (path == self.flagPath):
+            if path == self.imagePath:
                 print path
                 continue
             else:
