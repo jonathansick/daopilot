@@ -110,7 +110,7 @@ class PSFFactory(object):
         if clean:
             self._clean()
         
-        return (psfPath, pickPath, coordFilePath, apFilePath)
+        return (psfPath, pickPath, coordFilePath, apFilePath, varPSF)
     
     def _make_analytic_psf(self):
         """This is a bailout method to return the path to the analytic PSF.
